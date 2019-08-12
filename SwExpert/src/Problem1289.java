@@ -1,47 +1,35 @@
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
-public class Problem1289 {
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
+public class Solution {
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		int testCase = sc.nextInt();
-		sc.nextLine();
-		for (int t = 0; t < testCase; t++) {
+		int tc = Integer.parseInt(br.readLine());
 
-			String input = sc.nextLine();
+		for (int t = 1; t <= tc; t++) {
 
-			String[] inputs = input.split("");
-			boolean flag = false;
-			int inputsLen = inputs.length;
+			String s = br.readLine();
+			char cur = s.charAt(s.length() - 1);
+			char next = '\u0000';
 			int cnt = 0;
-			boolean[] bInputs = new boolean[inputsLen];
-			
-			for (int i = 0; i < inputsLen; i++) {
-				if (inputs[i].equals("1"))
-					bInputs[i] = true;
-				else
-					bInputs[i] = false;
-			}
 
-			for (int i = 0; i < inputsLen; i++) {
-				if (bInputs[i] == true)
-					flag = true;
-				else
-					flag = false;
-
-				if (flag) {
-					for (int j = i; j < inputsLen; j++) {
-						bInputs[j] = !bInputs[j];
-					}
+			for (int i = s.length() - 2; i >= 0; i--) {
+				next = s.charAt(i);
+				if (cur == '0' && next == '1') {
+					cur = '1';
 					cnt++;
-
+				} else if (cur == '1' && next == '0') {
+					cur = '0';
+					cnt++;
 				}
-
 			}
-
-			System.out.printf("#%d %d\n", t + 1, cnt);
-
-		}
+			if (cur == '1')
+				cnt++;
+			System.out.format("#%d %d\n",t,cnt);
+		} // for
 
 	}
 }
