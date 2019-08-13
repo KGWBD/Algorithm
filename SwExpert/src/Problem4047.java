@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
-public class Solution {
+public class Problem4047 {
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = null;
@@ -12,14 +12,10 @@ public class Solution {
 //		int testCase = Integer.parseInt(br.readLine());
 //		for (int t = 1; t <= testCase; t++) {
 
-			int n = Integer.parseInt(br.readLine());
-			st = new StringTokenizer(br.readLine());
+		int n = Integer.parseInt(br.readLine());
+		st = new StringTokenizer(br.readLine());
 
-			
-			
-			
 //			System.out.format("#%d %s\n", t, ans);
-		}
-
 	}
+
 }
