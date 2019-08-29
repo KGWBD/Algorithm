@@ -1,15 +1,18 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class Problem1244 {
 	static int max;
 	static int tempN;
+	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static StringTokenizer st = null;
+	static Set<String>[] set;
 
 	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = null;
 
 		int testCase = Integer.parseInt(br.readLine());
 		int cnt;
@@ -20,15 +23,16 @@ public class Problem1244 {
 			cnt = Integer.parseInt(st.nextToken());
 			max = -1;
 			int length = arr.length;
-			while(cnt - (length-1) >= 2) {
-				cnt -= 2;
+			set = new HashSet[cnt + 1];
+			for (int i = 0; i <= cnt; i++) {
+				set[i] = new HashSet<>();
 			}
-			dfs(arr, cnt);
+			dfs(arr,cnt, 0);
 			System.out.format("#%d %d\n", t, max);
 		}
 	}
 
-	private static void dfs(String[] arr, int cnt) {
+	private static void dfs(String[] arr, int cnt, int change) {
 		String temp = "";
 		if (cnt == 0) {
 
@@ -42,11 +46,17 @@ public class Problem1244 {
 
 			return;
 		}
-		for (int i = 0; i < arr.length - 1; i++) {
-			for (int j = i + 1; j < arr.length; j++) {
+		String tmp = "";
+		for (int i = 0; i < arr.length; i++) {
+			tmp += arr[i];
+		}
+		if (set[change].add(tmp)) {
+			for (int i = 0; i < arr.length - 1; i++) {
+				for (int j = i + 1; j < arr.length; j++) {
 					swap(arr, j, i);
-					dfs(arr, cnt - 1);
+					dfs(arr, cnt - 1, change + 1);
 					swap(arr, i, j);
+				}
 			}
 		}
 	}
