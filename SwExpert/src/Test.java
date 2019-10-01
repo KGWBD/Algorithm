@@ -1,45 +1,39 @@
-import java.util.Collections;
-import java.util.LinkedList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Test {
-	static LinkedList<Charger> list;
-	static LinkedList<Charger> copiedList;
-	public static void main(String[] args) {
+	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static StringTokenizer st;
+	static int N;
+	static int[] dayArr;
+	static int[] payArr;
+	static int max = Integer.MIN_VALUE;
+	public static void main(String[] args) throws IOException {
 		
-		list = new LinkedList<>();
-		copiedList = new LinkedList<>();
+		N = Integer.parseInt(br.readLine());
 		
-		list.add(new Charger(1,1,1,1));
-		System.out.println(list.get(0));
+		dayArr = new int[N+1];
+		payArr = new int[N+1];
 		
-		
-		copiedList.addAll(list);
-//		
-//		System.out.println(copiedList.get(0));
-		
-		
+		for(int i=1;i <=N;i++) {
+			st = new StringTokenizer(br.readLine());
+			dayArr[i] = Integer.parseInt(st.nextToken());
+			payArr[i] = Integer.parseInt(st.nextToken());
+		}
+		for(int i = 1; i <= N ; i++) {
+			dfs(i,0);
+		}
+		System.out.println(max);
 	}
-	
-	static class Charger implements Comparable<Charger>{
-		int x;
-		int y;
-		int coverage;
-		int performance;
-		public Charger(int x, int y, int coverage, int performance) {
-			this.x = x;
-			this.y = y;
-			this.coverage = coverage;
-			this.performance = performance;
-		}
-		@Override
-		public int compareTo(Charger o) {
-			return o.performance - performance;
-		}
-		@Override
-		public String toString() {
-			return super.toString();
-		}
+	private static void dfs(int day, int pay) {
+		if(day>N)return;
 		
+		pay += payArr[day];
+		day += dayArr[day];
+		dfs(day,pay);
 		
+		if(max<pay)max = pay;
 	}
 }
