@@ -4,19 +4,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
-public class Main {
+public class Boj17143 {
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 	static StringTokenizer st;
 	static int R, C, M;
 	static int ans;
-	static int[][] map;
-	static int[][] size;
-	static int[][] dir;
 	static int[] dx = { 0, 0, 0, 1, -1 };
 	static int[] dy = { 0, -1, 1, 0, 0 };
 
@@ -28,7 +24,7 @@ public class Main {
 		M = Integer.parseInt(st.nextToken());
 
 		LinkedList<Node> list = new LinkedList<Node>();
-
+		LinkedList<Node> removeList = new LinkedList<Node>();
 		int r, c, s, d, z;
 		int num = r = c = s = d = z = 0;
 		for (int i = 0; i < M; i++) {
@@ -43,64 +39,35 @@ public class Main {
 
 		while (num < C) { // 1번째..
 				Collections.sort(list);
-
+				Node remove = null;
 				for (Node n : list) {
 					if (n.c == num + 1) {
 						ans += n.z;
-						list.remove(n);
+						remove = n;
 						break;
 					}
 				} // 같은 열에 있는 상어중 땅과 가장 가까운 상어 제거. ok
+				if(remove!=null) list.remove(remove);
+				
 
 				move(num, list);
 				
-//				for (int i = 0; i < list.size() - 1; i++) {
-//					Node now = list.get(i);
-//					for (int j = i + 1; j < list.size(); j++) {
-//						Node next = list.get(j);
-//						if (now.c == next.c && now.r == next.r) {
-//							if (now.z > next.z) {
-//								list.remove(next);
-//							} else {
-//								list.remove(now);
-//							}
-//						}
-//
-//					}
-//				} // 잡아 먹음
-				
-				map = new int[R+1][C+1];
-				size = new int[R+1][C+1];
-				dir = new int[R+1][C+1];
-				
-				for(int i = 0 ; i < list.size();i++) {
-					Node n = list.get(i);
-					r = n.r;
-					c = n.c;
-					
-					if(map[r][c] == 0) {
-						map[r][c] = n.z;
-						size[r][c] = n.s;
-						dir[r][c] = n.d;
-					} else {
-						if(map[r][c]<n.z) {
-							map[r][c] = n.z;
-							size[r][c] = n.s;
-							dir[r][c] = n.d;
+				int size = list.size();
+				for (int i = 0; i < size - 1; i++) {
+					Node now = list.get(i);
+					for (int j = i + 1; j < size; j++) {
+						Node next = list.get(j);
+						if (now.c == next.c && now.r == next.r) {
+							if (now.z > next.z) {
+								removeList.add(next);
+							} else {
+								removeList.add(now);
+							}
 						}
 					}
-				}
-				list.clear();
-				
-				for(int i = 1 ; i <= R; i++) {
-					for(int j = 1; j<=C; j++) {
-						if(map[i][j]!=0) {
-							list.add(new Node(i,j,size[i][j],dir[i][j],map[i][j]));
-						}
-					}
-				}
-				
-			
+				} // 잡아 먹음
+				list.removeAll(removeList);
+				removeList.clear();
 			num++; // 오른쪽으로 이동;
 		}
 		bw.write(ans + "\n");
@@ -114,11 +81,13 @@ public class Main {
 		ny = nx = tempY = tempX = 0;
 		int size = list.size();
 		for (int i = 0; i < size; i++) {
-			Node n = list.pollFirst();
+			Node n = list.get(i);
 			dir = n.d; // 방향 얻음
 			speed = n.s;
 			tempY = n.r;
 			tempX = n.c;
+			if(dir==1 || dir==2)speed = speed%((R-1)*2);
+			else speed = speed%((C-1)*2);
 			while (speed > 0) {
 				ny = tempY + dy[dir];
 				nx = tempX + dx[dir];
@@ -132,12 +101,11 @@ public class Main {
 				tempX = nx;
 				speed--;
 			}
-			list.add(new Node(tempY, tempX, n.s, dir, n.z));
+//			list.addLast(new Node(tempY, tempX, n.s, dir, n.z));
+			n.r = tempY;
+			n.c = tempX;
+			n.d = dir;
 		}
-//		for(Node n: list[num+1]) {
-//			System.out.println(n);
-//		}
-//		System.out.println("=================");
 
 	}
 
@@ -181,11 +149,6 @@ public class Main {
 		@Override
 		public int compareTo(Node o) {
 			return r - o.r;
-		}
-
-		@Override
-		public String toString() {
-			return "Node [r=" + r + ", c=" + c + ", s=" + s + ", d=" + d + ", z=" + z + "]";
 		}
 
 	}
