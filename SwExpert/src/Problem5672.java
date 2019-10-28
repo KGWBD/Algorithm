@@ -1,85 +1,72 @@
-import java.io.*;
-import java.util.*;
- 
-public class Solution {
-    public static StringTokenizer stk;
-    public static StringBuilder sb = new StringBuilder();
-    public static int[] dx = {-1, 0, 0, 1};
-    public static int[] dy = {0, -1, 1, 0};
-    public static int n, eating = 0;
- 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        n = Integer.parseInt(br.readLine());
-        int[][] map = new int[n][n];
-        Queue<Shark> q = new LinkedList<>();
-        for (int i = 0; i < n; i++) {
-            stk = new StringTokenizer(br.readLine());
-            for (int j = 0; j < n; j++) {
-                map[i][j] = Integer.parseInt(stk.nextToken());
-                if (map[i][j] == 9) {
-                    q.add(new Shark(i, j, 2, 0));
-                    map[i][j] = 0;
-                }
-            }
-        }
- 
-        int ans = 0;
-        boolean[][] visited = new boolean[n][n];
-        while (!q.isEmpty()) {
-            Shark shark = q.poll();
-            if (!visited[shark.x][shark.y]) {
-                visited[shark.x][shark.y] = true;
-                if (map[shark.x][shark.y] != 0 && map[shark.x][shark.y] < shark.power) {  //�� ���̸� ã����
-                    Shark curr = shark;
-                    //�Ÿ� > ���� > ���� ������ �Ա� ���� ���� Queue Ž��
-                    while (!q.isEmpty()) {
-                        shark = q.poll();
-                        if (map[shark.x][shark.y] != 0 && map[shark.x][shark.y] < shark.power) {
-                            if (curr.cost == shark.cost) {
-                                if (curr.x > shark.x) {
-                                    curr = shark;
-                                } else if (curr.x == shark.x && curr.y > shark.y) {
-                                    curr = shark;
-                                }
-                            } else if (curr.cost > shark.cost) {
-                                curr = shark;
-                            }
-                        }
-                    }
-                    map[curr.x][curr.y] = 0;
-                    eating++;
-                    ans += curr.cost;
-                    int flag = 0;
-                    if (eating == curr.power) {        //�� ������ �� ������
-                        flag = 1;
-                        eating = 0;
-                    }
-                    q.clear();
-                    q.add(new Shark(curr.x, curr.y, curr.power + flag, 0));
-                    visited = new boolean[n][n];
-                    continue;
-                }
-                for (int i = 0; i < 4; i++) {
-                    int nx = shark.x + dx[i];
-                    int ny = shark.y + dy[i];
-                    if (nx >= 0 && nx < n && ny >= 0 && ny < n && map[nx][ny] <= shark.power && !visited[nx][ny]) {
-                        q.add(new Shark(nx, ny, shark.power, shark.cost + 1));
-                    }
-                }
-            }
-        }
-        System.out.println(ans);
-    }
- 
-    public static class Shark {
-        int x, y, power, cost;
- 
-        public Shark(int x, int y, int power, int cost) {
-            this.x = x;
-            this.y = y;
-            this.power = power;
-            this.cost = cost;
-        }
-    }
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
+public class Problem5672 {
+	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+	static char[] arr;
+	static int N;
+
+	public static void main(String[] args) throws Exception {
+		int T = Integer.parseInt(br.readLine().trim());
+		for (int t = 1; t <= T; t++) {
+			bw.write("#" + t + " ");
+			N = Integer.parseInt(br.readLine().trim());
+			StringBuilder sb = new StringBuilder();
+
+			for (int i = 0; i < N; i++) {
+				sb.append(br.readLine().trim());
+			}
+
+			arr = new char[N];
+			arr = sb.toString().toCharArray();
+			int start = 0, end = N - 1;
+
+			while (start < end) {
+
+				if (arr[start] < arr[end]) {
+					bw.write(arr[start++]);
+				} else if (arr[start] > arr[end]) {
+					bw.write(arr[end--]);
+				} else {
+					int tempStart = start + 1;
+					int tempEnd = end - 1;
+					
+					while (tempStart < tempEnd) {
+						if (arr[tempStart] == arr[tempEnd]) {
+							
+//							System.out.println(" arr[tempStart] ::  "+arr[tempStart] + " arr[tempEnd] " + arr[tempEnd]);
+							tempStart++;
+							tempEnd--;
+//							System.out.println("tempStart " + tempStart + " tempEnd ::" + tempEnd);
+						} else {
+							break;
+						}
+					}
+
+					if (tempStart == tempEnd) {
+						bw.write(arr[start++]);
+						continue;
+					} else if (tempStart > tempEnd) {
+						bw.write(arr[end--]);
+						continue;
+					}
+
+					if (arr[tempStart] < arr[tempEnd]) {
+						bw.write(arr[start++]);
+					} else if (arr[tempStart] > arr[tempEnd]) {
+						bw.write(arr[end--]);
+					}
+				}
+			}
+			if(start==end) {
+				bw.write(arr[end]);
+			}
+
+			bw.write("\n");
+		}
+		bw.close();
+	}
 }
