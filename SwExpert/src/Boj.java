@@ -1,107 +1,206 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.OutputStreamWriter;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class Boj {
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+	static LinkedList<Number>[] circle;
 	static StringTokenizer st;
-	static int N, M, R, C, D;
-	static int[] dx = { 0, 1, 0, -1 };
-	static int[] dy = { -1, 0, 1, 0 };
-	static int[][] map;
-	static int clear;
+	static int N, M, T;
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
-
 		st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		map = new int[N][M];
-		st = new StringTokenizer(br.readLine());
-		R = Integer.parseInt(st.nextToken());
-		C = Integer.parseInt(st.nextToken());
-		D = Integer.parseInt(st.nextToken());
+		N = Integer.parseInt(st.nextToken()); // N개의 원판
+		M = Integer.parseInt(st.nextToken()); // M각 행
+		T = Integer.parseInt(st.nextToken()); // 반복 횟수
 
-		for (int i = 0; i < N; i++) {
+		circle = new LinkedList[N + 1];
+		for (int i = 1; i <= N; i++) {
+			circle[i] = new LinkedList<>();
+		}
+		int numberCnt = 0;
+		int sum = 0;
+		int n = 0;
+		for (int i = 1; i <= N; i++) {
 			st = new StringTokenizer(br.readLine());
 			for (int j = 0; j < M; j++) {
-				map[i][j] = Integer.parseInt(st.nextToken());
+				n = Integer.parseInt(st.nextToken());
+				circle[i].add(new Number(n));
 			}
 		}
-		dfs(R, C, D);
-		System.out.println("-----------");
+		System.out.println("sum :: " + sum);
+		System.out.println("numberCnt :: " + numberCnt);
+		int x, d, k;
+//		printCircle();
+//		System.out.println("===============================");
+		while (T > 0) { // 반복할 횟수....
+			st = new StringTokenizer(br.readLine());
+			x = Integer.parseInt(st.nextToken()); // x의 배수 돌리기
+			d = Integer.parseInt(st.nextToken()); // 방향 0 시계 1 반시계
+			k = Integer.parseInt(st.nextToken()); // 1칸 돌릴지 2칸돌릴지
 
-		System.out.println(clear);
+			for (int i = 1; i <= N; i++) {
+				if (i % x == 0) { // 돌릴 원판들 돌리자. 시계방향인지 아닌지 판단후 반복
+					switch (d) {
+					case 0: // 시계
+						for (int j = 0; j < k; j++) {
+							circle[i].addFirst(circle[i].pollLast());
+						}
+						break;
+					case 1:
+						for (int j = 0; j < k; j++) {
+							circle[i].addLast(circle[i].pollFirst());
+						}
+						break;
+					}
 
-	}
-
-	private static void dfs(int y, int x, int dir) {
-		boolean flag = false;
-		System.out.println("---------------------------------------");
-		print();
-		map[y][x] = 9;
-		clear++;
-		int ny, nx;
-		int cnt = 1;
-		dir = turnLeft(dir);
-		ny = y + dy[dir];
-		nx = x + dx[dir];
-		while (map[ny][nx] != 0 && cnt != 4) {
-			dir = turnLeft(dir);
-			ny = y + dy[dir];
-			nx = x + dx[dir];
-			cnt++;
-			if (isRange(ny, nx))
-				continue;
-		}
-
-		if (cnt < 4) {
-			dfs(ny, nx, dir);
-		} else {
-			dir = turnLeft(dir);
-			dir = turnLeft(dir);
-			ny = y + dy[dir];
-			nx = x + dx[dir];
-			if (isRange(ny, nx)) {
-				return;
+				}
 			}
-			dir = turnLeft(dir);
-			dir = turnLeft(dir);
-			if (map[ny][nx] != 1) {
-				dfs(ny, nx, dir);
-			}
-		}
-
-	}
-
-	private static boolean isRange(int ny, int nx) {
-		if (ny < 0 || ny == N || nx < 0 || nx == M)
-			return true;
-		return false;
-
-	}
-
-	private static int turnLeft(int dir) {
-		if (dir - 1 < 0)
-			return 3;
-		else
-			return dir - 1;
-
-	}
-
-	private static void print() {
-		for (int i = 0; i < N; i++) {
+//			System.out.println(T);
+			printCircle();
+			System.out.println("==================");
+			Number temp, rigth, down, up;
+			Set<Number> tempList = new HashSet<>();
+			for (int i = 1; i <= N; i++) { // 원판
+				for (int j = 0; j < M; j++) {
+					if (j == 0) {
+						temp = circle[i].getFirst();
+						if (temp.num != -1) {
+							rigth = circle[i].get(1);
+							if (temp.num == rigth.num) {
+								tempList.add(rigth);
+								tempList.add(temp);
+							}
+						}
+					} else if (j == M - 1) {
+						temp = circle[i].getLast();
+						if (temp.num != -1) {
+							rigth = circle[i].getFirst();
+							if (temp.num == rigth.num) {
+								tempList.add(rigth);
+								tempList.add(temp);
+							}
+						}
+					} else {
+						temp = circle[i].get(j);
+						if (temp.num != -1) {
+							rigth = circle[i].get(j + 1);
+							if (temp.num == rigth.num) {
+								tempList.add(rigth);
+								tempList.add(temp);
+							}
+						}
+					}
+				}
+			} // 원판 돌리면서 인접한것중 같은거
+			
 			for (int j = 0; j < M; j++) {
-				System.out.print(map[i][j] + " ");
+				for (int i = 1; i <= N; i++) {
+					if (i == N) {
+						temp = circle[i].get(j);
+						if (temp.num != -1) {
+							down = circle[i - 1].get(j);
+							if (temp.num == down.num) {
+								tempList.add(down);
+								tempList.add(temp);
+							}
+						}
+					} else {
+						temp = circle[i].get(j);
+						if (temp.num != -1) {
+							up = circle[i + 1].get(j);
+							if (temp.num == up.num) {
+								tempList.add(up);
+								tempList.add(temp);
+							}
+						}
+					}
+				}
+			}
+			
+			if (tempList.size() > 0) {
+				Iterator<Number> it = tempList.iterator();
+				System.out.println(tempList.size());
+				while (it.hasNext()) {
+					temp = it.next();
+					temp.num = -1;
+				}
+				
+				System.out.println("*****************************");
+				printCircle();
+				System.out.println("*****************************");
+				System.out.println("sum :: " + sum);
+				
+			} else {
+				sum = 0;
+				numberCnt = 0;
+				for(int i = 1; i<=N; i++) {
+					for(Number b : circle[i]) {
+						if(b.num!=-1) {
+							sum+=b.num;
+							numberCnt++;
+						}
+					}
+				}
+				
+				double average = (double) sum / numberCnt;
+				for (int i = 1; i <= N; i++) {
+					Iterator<Number> it = circle[i].iterator();
+					while (it.hasNext()) {
+						temp = it.next();
+						if(temp.num>average ) {
+							temp.num -=1;
+						} else if(temp.num<average && temp.num!=-1){
+							temp.num+=1;
+						}
+					}
+				}
+				
+				for(int i = 1; i<=N; i++) {
+					for(Number b : circle[i]) {
+						if(b.num!=-1) {
+							sum+=b.num;
+						}
+					}
+				}
+				System.out.println("*****************************");
+				printCircle();
+				System.out.println("*****************************");
+				System.out.println("sum :: " + sum);
+			}
+			T--;
+		}
+		
+		bw.write(sum + "\n");
+		bw.close();
+
+	}
+
+	static class Number {
+		int num;
+
+		Number(int num) {
+			this.num = num;
+		}
+
+	}
+
+	private static void printCircle() {
+		for (int i = 1; i <= N; i++) {
+			for (int j = 0; j < M; j++) {
+				System.out.print(circle[i].get(j).num + " ");
 			}
 			System.out.println();
-
 		}
+
 	}
 
 }
